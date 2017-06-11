@@ -1,5 +1,6 @@
 module Model exposing (..)
 
+import Dict exposing (Dict)
 import Http
 
 
@@ -31,8 +32,28 @@ type Player
     | Guest (Selectable GuestInfo)
 
 
+playerId : Player -> String
+playerId player =
+    case player of
+        Employee employee ->
+            employee.object.firstName ++ "." ++ employee.object.lastName
+
+        Guest guest ->
+            "Guest." ++ toString guest.object.number
+
+
+toggleSelection : Player -> Player
+toggleSelection player =
+    case player of
+        Employee emp ->
+            Employee { emp | selected = not emp.selected }
+
+        Guest guest ->
+            Guest { guest | selected = not guest.selected }
+
+
 type alias Model =
-    { players : List Player
+    { players : Dict String Player
     , result : Maybe LineUp
     , error : Maybe Error
     , loading : Bool

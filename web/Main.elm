@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Dict exposing (Dict)
 import Html
 import Message exposing (Msg)
 import Model exposing (Model)
@@ -9,7 +10,7 @@ import View exposing (view)
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [] Nothing Nothing False, loadEmployees )
+    ( Model Dict.empty Nothing Nothing False, loadEmployees )
 
 
 main : Program Never Model Msg

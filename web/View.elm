@@ -1,5 +1,6 @@
 module View exposing (..)
 
+import Dict
 import Html exposing (Attribute, Html, button, div, img, li, option, select, text, ul)
 import Html.Attributes exposing (alt, class, selected, size, src)
 import Html.Events exposing (on, onClick)
@@ -34,7 +35,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ errorMessage model.error
-        , ul [] (List.map renderPlayer model.players)
+        , ul [] (List.map renderPlayer (Dict.values model.players))
         , button [ onClick Randomize ] [ text "Randomize" ]
         ]
 

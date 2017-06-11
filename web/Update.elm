@@ -1,5 +1,7 @@
 module Update exposing (..)
 
+import Config
+import Dict exposing (Dict)
 import Http
 import Json.Decode as Json
 import Message exposing (Msg(..))
@@ -21,28 +23,43 @@ update msg model =
                     ( { model | error = Just (Model.HttpError error) }, Cmd.none )
 
         SelectionChanged player ->
-            ( { model | players = updatePlayer model.players player }, Cmd.none )
+            ( { model | players = togglePlayerSelection model.players player }, Cmd.none )
 
 
 refreshPlayers : Model -> List Model.EmployeeInfo -> Model
 refreshPlayers model employees =
-    { model | players = List.map (\e -> Model.Employee (Model.Selectable e False)) employees, error = Nothing }
+    let
+        players =
+            Dict.fromList
+                (List.append
+                    (List.map
+                        (\e -> Model.Employee (Model.Selectable e False))
+                        employees
+                    )
+                    (List.map
+                        (\g -> Model.Guest (Model.Selectable (Model.GuestInfo g) False))
+                        (List.range 1 Config.numberOfGuests)
+                    )
+                    |> List.map (\p -> ( Model.playerId p, p ))
+                )
+    in
+    { model | players = players, error = Nothing }
 
 
-updatePlayer : List Model.Player -> Model.Player -> List Model.Player
-updatePlayer players player =
-    players
+togglePlayerSelection : Dict String Model.Player -> Model.Player -> Dict String Model.Player
+togglePlayerSelection players player =
+    Dict.update (Model.playerId player) (Maybe.map Model.toggleSelection) players
 
 
 
--- { model | players = List.map (\e -> Model.Employee (Model.Selectable e False)) employees, error = Nothing }
+-- { p | selected = not p.selected }
 
 
 loadEmployees : Cmd Msg
 loadEmployees =
     let
         url =
-            "https://softaware-randomizer-api.azurewebsites.net/api/scrape?code=yBwvvbq/TaZO8wj0TUvnMjdaZTUKq64oSe14qaK0QL8IicRLLdDZLw=="
+            Config.scrapingLink
     in
     Http.send EmployeeInfosLoaded (Http.get url decodeJson)
 
