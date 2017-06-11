@@ -20,20 +20,20 @@ type Employee = {
 // http://www.ojdevelops.com/2016/03/web-scraping-with-f.html
 [<Literal>]
 let TEAM_URL = "https://www.softaware.at/about-us/team.html"
-let result = HtmlProvider<TEAM_URL, Encoding="UTF-8">.Load(TEAM_URL)
+// let result = HtmlProvider<TEAM_URL, Encoding="UTF-8">.Load(TEAM_URL)
 
 let Run(req: HttpRequestMessage, log: TraceWriter) =
     async {
         log.Info(sprintf 
             "F# HTTP trigger function processed a request.")
 
-        let employees = 
-            result.Html.Descendants()
-            |> Seq.filter(fun n -> n.HasName "section" && n.HasClass "section")
-            |> Seq.head
-            |> fun n -> n.Descendants()
-            |> Seq.filter(fun n -> n.HasName "img")
-            |> Seq.map(fun n -> { firstName=(n.Attribute "alt").Value(); lastName="TODO"; pictureUrl=(n.Attribute "src").Value() })
+        // let employees = 
+        //     result.Html.Descendants()
+        //     |> Seq.filter(fun n -> n.HasName "section" && n.HasClass "section")
+        //     |> Seq.head
+        //     |> fun n -> n.Descendants()
+        //     |> Seq.filter(fun n -> n.HasName "img")
+        //     |> Seq.map(fun n -> { firstName=(n.Attribute "alt").Value(); lastName="TODO"; pictureUrl=(n.Attribute "src").Value() })
 
-        return req.CreateResponse(HttpStatusCode.OK, employees);
+        return req.CreateResponse(HttpStatusCode.OK, "employees");
     } |> Async.RunSynchronously
