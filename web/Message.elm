@@ -5,5 +5,6 @@ import Model
 
 
 type Msg
-    = Load
-    | EmployeesLoaded (Result Http.Error (List Model.Employee))
+    = Randomize
+    | SelectionChanged Model.Player
+    | EmployeeInfosLoaded (Result Http.Error (List Model.EmployeeInfo))

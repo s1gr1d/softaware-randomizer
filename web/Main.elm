@@ -9,7 +9,7 @@ import View exposing (view)
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model [] Model.None, loadEmployees )
+    ( Model [] Nothing Nothing False, loadEmployees )
 
 
 main : Program Never Model Msg
