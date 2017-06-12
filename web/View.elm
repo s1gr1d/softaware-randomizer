@@ -5,7 +5,11 @@ import Dict
 import Html exposing (Attribute, Html, button, div, img, li, option, select, text, ul)
 import Html.Attributes exposing (alt, class, selected, size, src)
 import Html.Events exposing (on, onClick)
-import Message exposing (Msg(Randomize, SelectionChanged))
+import Material
+import Material.Button as Button
+import Material.Options as Options exposing (css)
+import Material.Scheme
+import Message exposing (Msg(Mdl, Randomize, SelectionChanged))
 import Model exposing (Model)
 
 
@@ -66,14 +70,33 @@ renderGuest guest =
     img [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ], src "./assets/guest.png", alt "" ] []
 
 
+type alias Mdl =
+    Material.Model
+
+
 view : Model -> Html Msg
 view model =
     div []
         [ errorMessage model.error
         , ul [ styles [ Css.listStyleType Css.none, Css.margin Css.zero, Css.padding Css.zero, Css.displayFlex, Css.flexWrap Css.wrap, Css.justifyContent Css.center ] ]
             (List.map renderPlayer (Dict.values model.players))
-        , button [ onClick Randomize ] [ text "Randomize" ]
+        , Button.render Mdl
+            [ 0 ]
+            model.mdl
+            ([ Button.raised
+             , Button.colored
+             , Button.ripple
+             , Options.onClick Randomize
+             ]
+                ++ (if Model.isRandomizable model then
+                        [ Button.disabled ]
+                    else
+                        []
+                   )
+            )
+            [ text "Randomize" ]
         ]
+        |> Material.Scheme.top
 
 
 errorMessage : Maybe Model.Error -> Html Msg

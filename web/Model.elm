@@ -2,6 +2,7 @@ module Model exposing (..)
 
 import Dict exposing (Dict)
 import Http
+import Material
 
 
 type alias EmployeeInfo =
@@ -52,11 +53,27 @@ toggleSelection player =
             Guest { guest | selected = not guest.selected }
 
 
+isRandomizable : Model -> Bool
+isRandomizable model =
+    (model.players |> Dict.size) >= 4
+
+
 type alias Model =
     { players : Dict String Player
     , result : Maybe LineUp
     , error : Maybe Error
     , loading : Bool
+    , mdl : Material.Model
+    }
+
+
+defaultModel : Model
+defaultModel =
+    { players = Dict.empty
+    , result = Nothing
+    , error = Nothing
+    , loading = False
+    , mdl = Material.model
     }
 
 

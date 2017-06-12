@@ -4,6 +4,7 @@ import Config
 import Dict exposing (Dict)
 import Http
 import Json.Decode as Json
+import Material
 import Message exposing (Msg(..))
 import Model exposing (Model)
 
@@ -24,6 +25,9 @@ update msg model =
 
         SelectionChanged player ->
             ( { model | players = togglePlayerSelection model.players player }, Cmd.none )
+
+        Mdl msg_ ->
+            Material.update Mdl msg_ model
 
 
 refreshPlayers : Model -> List Model.EmployeeInfo -> Model

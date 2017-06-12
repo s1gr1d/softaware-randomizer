@@ -10,7 +10,7 @@ import View exposing (view)
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Dict.empty Nothing Nothing False, loadEmployees )
+    ( Model.defaultModel, loadEmployees )
 
 
 main : Program Never Model Msg
