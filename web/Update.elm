@@ -17,8 +17,14 @@ update msg model =
         Randomize ->
             ( model, randomize model )
 
+        ClearLineUp ->
+            ( { model | lineUp = Nothing }, Cmd.none )
+
         CreateLineUp players ->
             ( createLineUp model players, Cmd.none )
+
+        LoadEmployees ->
+            ( model, loadEmployees )
 
         EmployeeInfosLoaded result ->
             case result of
@@ -30,9 +36,6 @@ update msg model =
 
         SelectionChanged player ->
             ( { model | players = togglePlayerSelection model.players player }, Cmd.none )
-
-        Mdl msg_ ->
-            Material.update Mdl msg_ model
 
 
 randomize : Model -> Cmd Msg
@@ -95,7 +98,7 @@ refreshPlayers model employees =
                     |> List.map (\p -> ( Model.playerId p.object, p ))
                 )
     in
-    { model | players = players, error = Nothing }
+    { model | players = players, error = Nothing, loading = False }
 
 
 togglePlayerSelection : Dict String (Model.Selectable Model.Player) -> Model.Player -> Dict String (Model.Selectable Model.Player)
@@ -104,7 +107,12 @@ togglePlayerSelection players player =
 
 
 
--- { p | selected = not p.selected }
+--https://medium.com/elm-shorts/how-to-turn-a-msg-into-a-cmd-msg-in-elm-5dd095175d84
+
+
+init : Model -> ( Model, Cmd Msg )
+init defaultModel =
+    update LoadEmployees { defaultModel | loading = True }
 
 
 loadEmployees : Cmd Msg

@@ -1,14 +1,11 @@
 module View exposing (..)
 
 import Css
-import Html exposing (Attribute, Html, button, div, img, li, option, select, text, ul)
-import Html.Attributes exposing (alt, class, selected, size, src)
+import Html exposing (Attribute, Html, button, div, img, li, option, p, select, text, ul)
+import Html.Attributes exposing (alt, class, disabled, selected, size, src)
 import Html.Events exposing (on, onClick)
-import Material
-import Material.Button as Button
-import Material.Options as Options exposing (css)
-import Material.Scheme
-import Message exposing (Msg(Mdl, Randomize, SelectionChanged))
+import Material.Spinner as Loading
+import Message exposing (Msg(ClearLineUp, Randomize, SelectionChanged))
 import Model exposing (Model)
 
 
@@ -17,8 +14,8 @@ styles =
     Css.asPairs >> Html.Attributes.style
 
 
-disabled : Model.Selectable Model.Player -> List Css.Mixin
-disabled selectable =
+selectionOpacity : Model.Selectable Model.Player -> List Css.Mixin
+selectionOpacity selectable =
     selectionToVisibility selectable.selected
 
 
@@ -37,14 +34,13 @@ selectionToVisibility selected =
 
 renderPlayer : Model.Selectable Model.Player -> Html Msg
 renderPlayer selectable =
-    li [ styles ([ Css.width (Css.pct 23), Css.margin (Css.px 4) ] ++ disabled selectable) ]
+    li [ styles ([ Css.width (Css.pct 23), Css.margin (Css.px 4), Css.position Css.relative ] ++ selectionOpacity selectable) ]
         [ case selectable.object of
             Model.Employee employee ->
                 renderEmployee employee
 
             Model.Guest guest ->
                 renderGuest guest
-        , div [ class "overlay" ] []
         ]
 
 
@@ -70,62 +66,54 @@ renderGuest guest =
         []
 
 
-type alias Mdl =
-    Material.Model
+white : Css.Color
+white =
+    Css.hex "ffffff"
+
+
+pct100 : Css.Pct
+pct100 =
+    Css.pct 100
+
+
+header : Html Msg
+header =
+    Html.header [ styles [ Css.backgroundColor white, Css.padding (Css.rem 1), Css.displayFlex, Css.justifyContent Css.center, Css.alignItems Css.center ] ]
+        [ img [ styles [ Css.height (Css.rem 4) ], src "./assets/softaware-icon.png" ] []
+        , Html.h1 [ styles [ Css.height (Css.rem 2), Css.margin2 Css.zero (Css.rem 0.2), Css.textTransform Css.uppercase, Css.fontSize (Css.rem 1.5), Css.fontFamily Css.sansSerif ] ] [ text "▷" ]
+        , img [ styles [ Css.height (Css.rem 4) ], src "./assets/soccer.png" ] []
+        ]
 
 
 view : Model -> Html Msg
 view model =
-    div [ styles [ Css.backgroundColor (Css.hex "000000"), Css.height (Css.vh 100), Css.width (Css.vw 100) ] ]
+    div [ styles [ Css.boxSizing Css.borderBox, Css.backgroundImage (Css.url "./assets/background.jpg"), Css.backgroundPosition Css.top, Css.backgroundSize Css.cover, Css.height (Css.vh 100), Css.width (Css.vw 100) ] ]
         [ errorMessage model.error
-        , lineUp model.lineUp
+        , header
+        , div []
+            [ Html.header
+                [ styles [ Css.height (Css.rem 7) ] ]
+                []
+            ]
+        , Loading.spinner
+            [ Loading.active model.loading ]
+        , lineUp model
         , ul [ styles [ Css.listStyleType Css.none, Css.margin Css.zero, Css.padding Css.zero, Css.displayFlex, Css.flexWrap Css.wrap, Css.justifyContent Css.center ] ]
             (List.map renderPlayer (Model.orderedPlayers model))
-        , Button.render Mdl
-            [ 0 ]
-            model.mdl
-            ([ Button.raised
-             , Button.colored
-             , Button.ripple
-             , Options.onClick Randomize
-             ]
-                ++ (if Model.isRandomizable model then
-                        []
-                    else
-                        [ Button.disabled ]
-                   )
-            )
+        , button
+            [ disabled (Model.isRandomizable model), onClick Randomize ]
             [ text "Randomize" ]
-        , img [ styles [ Css.width (Css.px 80), Css.height (Css.px 80) ], src "./assets/softaware-logo.png" ] []
         ]
-        |> Material.Scheme.top
 
 
-lineUp : Maybe Model.LineUp -> Html Msg
-lineUp lineUp =
-    case lineUp of
+lineUp : Model -> Html Msg
+lineUp model =
+    case model.lineUp of
         Nothing ->
             div [] []
 
         Just lineUp ->
-            div [ styles [ Css.color (Css.hex "ffffff") ] ]
-                [ text
-                    (case lineUp of
-                        Model.Single single ->
-                            Model.displayName single.player1
-                                ++ " vs. "
-                                ++ Model.displayName single.player2
-
-                        Model.Double double ->
-                            Model.displayName double.teamA.player1
-                                ++ " & "
-                                ++ Model.displayName double.teamA.player2
-                                ++ " vs. "
-                                ++ Model.displayName double.teamB.player1
-                                ++ " & "
-                                ++ Model.displayName double.teamB.player2
-                    )
-                ]
+            div [] []
 
 
 errorMessage : Maybe Model.Error -> Html Msg

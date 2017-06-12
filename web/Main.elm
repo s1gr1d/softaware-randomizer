@@ -3,19 +3,14 @@ module Main exposing (..)
 import Html
 import Message exposing (Msg)
 import Model exposing (Model)
-import Update exposing (loadEmployees, update)
+import Update exposing (update)
 import View exposing (view)
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( Model.defaultModel, loadEmployees )
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { init = init
+        { init = Update.init Model.defaultModel
         , view = view
         , update = update
         , subscriptions = subscriptions
