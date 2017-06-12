@@ -110,13 +110,20 @@ lineUp lineUp =
         Just lineUp ->
             div [ styles [ Css.color (Css.hex "ffffff") ] ]
                 [ text
-                    (Model.displayName lineUp.teamAPlayer1
-                        ++ " & "
-                        ++ Model.displayName lineUp.teamAPlayer2
-                        ++ " vs. "
-                        ++ Model.displayName lineUp.teamBPlayer1
-                        ++ " & "
-                        ++ Model.displayName lineUp.teamBPlayer2
+                    (case lineUp of
+                        Model.Single single ->
+                            Model.displayName single.player1
+                                ++ " vs. "
+                                ++ Model.displayName single.player2
+
+                        Model.Double double ->
+                            Model.displayName double.teamA.player1
+                                ++ " & "
+                                ++ Model.displayName double.teamA.player2
+                                ++ " vs. "
+                                ++ Model.displayName double.teamB.player1
+                                ++ " & "
+                                ++ Model.displayName double.teamB.player2
                     )
                 ]
 

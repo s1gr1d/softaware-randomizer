@@ -24,12 +24,27 @@ type alias Selectable a =
     { object : a, selected : Bool }
 
 
-type alias LineUp =
-    { teamAPlayer1 : Player
-    , teamAPlayer2 : Player
-    , teamBPlayer1 : Player
-    , teamBPlayer2 : Player
+type alias DoubleType =
+    { teamA :
+        { player1 : Player
+        , player2 : Player
+        }
+    , teamB :
+        { player1 : Player
+        , player2 : Player
+        }
     }
+
+
+type alias SingleType =
+    { player1 : Player
+    , player2 : Player
+    }
+
+
+type LineUp
+    = Single SingleType
+    | Double DoubleType
 
 
 type Player
@@ -72,7 +87,7 @@ selectedPlayers model =
 
 isRandomizable : Model -> Bool
 isRandomizable model =
-    (model |> selectedPlayers |> List.length) >= 4
+    (model |> selectedPlayers |> List.length) >= 2
 
 
 orderedPlayers : Model -> List (Selectable Player)

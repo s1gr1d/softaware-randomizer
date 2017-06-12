@@ -55,14 +55,14 @@ createLineUp model players =
                 _ :: [] ->
                     Nothing
 
-                _ :: _ :: [] ->
-                    Nothing
+                a1 :: a2 :: [] ->
+                    Just (Model.Single (Model.SingleType a1 a2))
 
-                _ :: _ :: _ :: [] ->
-                    Nothing
+                a1 :: a2 :: _ :: [] ->
+                    Just (Model.Single (Model.SingleType a1 a2))
 
                 a1 :: a2 :: b1 :: b2 :: _ ->
-                    Just (Model.LineUp a1 a2 b1 b2)
+                    Just (Model.Double (Model.DoubleType { player1 = a1, player2 = a2 } { player1 = b1, player2 = b2 }))
     in
     { model | lineUp = lineUp }
 
@@ -78,7 +78,7 @@ refreshPlayers model employees =
         emps : List (Model.Selectable Model.Player)
         emps =
             List.map
-                (\e -> { selected = True, object = Model.Employee e })
+                (\e -> { selected = False, object = Model.Employee e })
                 (filterRelevant employees)
 
         guests : List (Model.Selectable Model.Player)
