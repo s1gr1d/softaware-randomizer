@@ -16,6 +16,10 @@ type alias GuestInfo =
     { number : Int }
 
 
+
+-- type alias Selectable a = { a | selected : Bool }
+
+
 type alias Selectable a =
     { object : a, selected : Bool }
 
@@ -29,37 +33,67 @@ type alias LineUp =
 
 
 type Player
-    = Employee (Selectable EmployeeInfo)
-    | Guest (Selectable GuestInfo)
+    = Employee EmployeeInfo
+    | Guest GuestInfo
 
 
 playerId : Player -> String
 playerId player =
     case player of
         Employee employee ->
-            employee.object.firstName ++ "." ++ employee.object.lastName
+            employee.firstName ++ "." ++ employee.lastName
 
         Guest guest ->
-            "Guest." ++ toString guest.object.number
+            "Guest." ++ toString guest.number
 
 
-toggleSelection : Player -> Player
-toggleSelection player =
-    case player of
-        Employee emp ->
-            Employee { emp | selected = not emp.selected }
+toggleSelection : Selectable Player -> Selectable Player
+toggleSelection selectable =
+    { selectable | selected = not selectable.selected }
 
-        Guest guest ->
-            Guest { guest | selected = not guest.selected }
+
+selectedPlayers : Model -> List Player
+selectedPlayers model =
+    model.players
+        |> Dict.values
+        |> List.filter .selected
+        |> List.map .object
 
 
 isRandomizable : Model -> Bool
 isRandomizable model =
-    (model.players |> Dict.size) >= 4
+    (model |> selectedPlayers |> List.length) >= 4
+
+
+orderedPlayers : Model -> List (Selectable Player)
+orderedPlayers model =
+    model.players
+        |> Dict.values
+        |> List.sortWith (\a b -> playerOrder a.object b.object)
+
+
+playerOrder : Player -> Player -> Order
+playerOrder a b =
+    case a of
+        Employee ae ->
+            case b of
+                Employee be ->
+                    compare ae.lastName be.lastName
+
+                Guest bg ->
+                    LT
+
+        Guest ag ->
+            case b of
+                Employee be ->
+                    GT
+
+                Guest bg ->
+                    compare ag.number bg.number
 
 
 type alias Model =
-    { players : Dict String Player
+    { players : Dict String (Selectable Player)
     , result : Maybe LineUp
     , error : Maybe Error
     , loading : Bool

@@ -30,29 +30,40 @@ update msg model =
             Material.update Mdl msg_ model
 
 
+filterRelevant : List Model.EmployeeInfo -> List Model.EmployeeInfo
+filterRelevant employees =
+    List.filter (\e -> not (List.member { firstName = e.firstName, lastName = e.lastName } Config.excludedPlayers)) employees
+
+
 refreshPlayers : Model -> List Model.EmployeeInfo -> Model
 refreshPlayers model employees =
     let
+        emps : List (Model.Selectable Model.Player)
+        emps =
+            List.map
+                (\e -> { selected = False, object = Model.Employee e })
+                (filterRelevant employees)
+
+        guests : List (Model.Selectable Model.Player)
+        guests =
+            List.map
+                (\g -> { selected = False, object = Model.Guest (Model.GuestInfo g) })
+                (List.range 1 Config.numberOfGuests)
+
+        players : Dict String (Model.Selectable Model.Player)
         players =
             Dict.fromList
-                (List.append
-                    (List.map
-                        (\e -> Model.Employee (Model.Selectable e False))
-                        employees
-                    )
-                    (List.map
-                        (\g -> Model.Guest (Model.Selectable (Model.GuestInfo g) False))
-                        (List.range 1 Config.numberOfGuests)
-                    )
-                    |> List.map (\p -> ( Model.playerId p, p ))
+                (emps
+                    ++ guests
+                    |> List.map (\p -> ( Model.playerId p.object, p ))
                 )
     in
     { model | players = players, error = Nothing }
 
 
-togglePlayerSelection : Dict String Model.Player -> Model.Player -> Dict String Model.Player
+togglePlayerSelection : Dict String (Model.Selectable Model.Player) -> Model.Player -> Dict String (Model.Selectable Model.Player)
 togglePlayerSelection players player =
-    Dict.update (Model.playerId player) (Maybe.map Model.toggleSelection) players
+    Dict.update (Model.playerId player) (Maybe.map (\p -> { p | selected = True })) players
 
 
 

@@ -1,7 +1,6 @@
 module View exposing (..)
 
 import Css
-import Dict
 import Html exposing (Attribute, Html, button, div, img, li, option, select, text, ul)
 import Html.Attributes exposing (alt, class, selected, size, src)
 import Html.Events exposing (on, onClick)
@@ -18,14 +17,9 @@ styles =
     Css.asPairs >> Html.Attributes.style
 
 
-disabled : Model.Player -> List Css.Mixin
-disabled player =
-    case player of
-        Model.Employee emp ->
-            selectionToVisibility emp.selected
-
-        Model.Guest guest ->
-            selectionToVisibility guest.selected
+disabled : Model.Selectable Model.Player -> List Css.Mixin
+disabled selectable =
+    selectionToVisibility selectable.selected
 
 
 selectionToVisibility : Bool -> List Css.Mixin
@@ -41,10 +35,10 @@ selectionToVisibility selected =
     ]
 
 
-renderPlayer : Model.Player -> Html Msg
-renderPlayer player =
-    li [ styles ([ Css.width (Css.pct 23), Css.margin (Css.px 4) ] ++ disabled player) ]
-        [ case player of
+renderPlayer : Model.Selectable Model.Player -> Html Msg
+renderPlayer selectable =
+    li [ styles ([ Css.width (Css.pct 23), Css.margin (Css.px 4) ] ++ disabled selectable) ]
+        [ case selectable.object of
             Model.Employee employee ->
                 renderEmployee employee
 
@@ -54,20 +48,20 @@ renderPlayer player =
         ]
 
 
-renderEmployee : Model.Selectable Model.EmployeeInfo -> Html Msg
+renderEmployee : Model.EmployeeInfo -> Html Msg
 renderEmployee employee =
     img
         [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ]
-        , src employee.object.pictureUrl
-        , alt employee.object.firstName
+        , src employee.pictureUrl
+        , alt employee.firstName
         , onClick (SelectionChanged (Model.Employee employee))
         ]
         []
 
 
-renderGuest : Model.Selectable Model.GuestInfo -> Html Msg
+renderGuest : Model.GuestInfo -> Html Msg
 renderGuest guest =
-    img [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ], src "./assets/guest.png", alt "" ] []
+    img [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ], src ("./assets/guest-" ++ toString guest.number ++ ".png"), alt "" ] []
 
 
 type alias Mdl =
@@ -76,10 +70,10 @@ type alias Mdl =
 
 view : Model -> Html Msg
 view model =
-    div []
+    div [ styles [ Css.backgroundColor (Css.hex "000000"), Css.height (Css.vh 100), Css.width (Css.vw 100) ] ]
         [ errorMessage model.error
         , ul [ styles [ Css.listStyleType Css.none, Css.margin Css.zero, Css.padding Css.zero, Css.displayFlex, Css.flexWrap Css.wrap, Css.justifyContent Css.center ] ]
-            (List.map renderPlayer (Dict.values model.players))
+            (List.map renderPlayer (Model.orderedPlayers model))
         , Button.render Mdl
             [ 0 ]
             model.mdl
@@ -89,9 +83,9 @@ view model =
              , Options.onClick Randomize
              ]
                 ++ (if Model.isRandomizable model then
-                        [ Button.disabled ]
-                    else
                         []
+                    else
+                        [ Button.disabled ]
                    )
             )
             [ text "Randomize" ]
