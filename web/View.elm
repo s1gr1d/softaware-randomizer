@@ -29,7 +29,7 @@ selectionToVisibility selected =
             (if selected then
                 1
              else
-                0.35
+                0.47
             )
         )
     ]
@@ -61,7 +61,13 @@ renderEmployee employee =
 
 renderGuest : Model.GuestInfo -> Html Msg
 renderGuest guest =
-    img [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ], src ("./assets/guest-" ++ toString guest.number ++ ".png"), alt "" ] []
+    img
+        [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ]
+        , src ("./assets/guest-" ++ toString guest.number ++ ".png")
+        , alt ""
+        , onClick (SelectionChanged (Model.Guest guest))
+        ]
+        []
 
 
 type alias Mdl =
@@ -72,6 +78,7 @@ view : Model -> Html Msg
 view model =
     div [ styles [ Css.backgroundColor (Css.hex "000000"), Css.height (Css.vh 100), Css.width (Css.vw 100) ] ]
         [ errorMessage model.error
+        , lineUp model.lineUp
         , ul [ styles [ Css.listStyleType Css.none, Css.margin Css.zero, Css.padding Css.zero, Css.displayFlex, Css.flexWrap Css.wrap, Css.justifyContent Css.center ] ]
             (List.map renderPlayer (Model.orderedPlayers model))
         , Button.render Mdl
@@ -89,8 +96,29 @@ view model =
                    )
             )
             [ text "Randomize" ]
+        , img [ styles [ Css.width (Css.px 80), Css.height (Css.px 80) ], src "./assets/softaware-logo.png" ] []
         ]
         |> Material.Scheme.top
+
+
+lineUp : Maybe Model.LineUp -> Html Msg
+lineUp lineUp =
+    case lineUp of
+        Nothing ->
+            div [] []
+
+        Just lineUp ->
+            div [ styles [ Css.color (Css.hex "ffffff") ] ]
+                [ text
+                    (Model.displayName lineUp.teamAPlayer1
+                        ++ " & "
+                        ++ Model.displayName lineUp.teamAPlayer2
+                        ++ " vs. "
+                        ++ Model.displayName lineUp.teamBPlayer1
+                        ++ " & "
+                        ++ Model.displayName lineUp.teamBPlayer2
+                    )
+                ]
 
 
 errorMessage : Maybe Model.Error -> Html Msg

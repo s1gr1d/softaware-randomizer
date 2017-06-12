@@ -1,6 +1,5 @@
 module Main exposing (..)
 
-import Dict exposing (Dict)
 import Html
 import Message exposing (Msg)
 import Model exposing (Model)

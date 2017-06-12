@@ -47,6 +47,16 @@ playerId player =
             "Guest." ++ toString guest.number
 
 
+displayName : Player -> String
+displayName player =
+    case player of
+        Employee employee ->
+            employee.firstName
+
+        Guest guest ->
+            "Gast " ++ toString guest.number
+
+
 toggleSelection : Selectable Player -> Selectable Player
 toggleSelection selectable =
     { selectable | selected = not selectable.selected }
@@ -94,7 +104,7 @@ playerOrder a b =
 
 type alias Model =
     { players : Dict String (Selectable Player)
-    , result : Maybe LineUp
+    , lineUp : Maybe LineUp
     , error : Maybe Error
     , loading : Bool
     , mdl : Material.Model
@@ -104,7 +114,7 @@ type alias Model =
 defaultModel : Model
 defaultModel =
     { players = Dict.empty
-    , result = Nothing
+    , lineUp = Nothing
     , error = Nothing
     , loading = False
     , mdl = Material.model

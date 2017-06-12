@@ -7,13 +7,18 @@ import Json.Decode as Json
 import Material
 import Message exposing (Msg(..))
 import Model exposing (Model)
+import Random
+import Random.List
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Randomize ->
-            ( model, Cmd.none )
+            ( model, randomize model )
+
+        CreateLineUp players ->
+            ( createLineUp model players, Cmd.none )
 
         EmployeeInfosLoaded result ->
             case result of
@@ -30,6 +35,38 @@ update msg model =
             Material.update Mdl msg_ model
 
 
+randomize : Model -> Cmd Msg
+randomize model =
+    Random.generate (\players -> CreateLineUp players)
+        (Model.selectedPlayers model
+            |> Random.List.shuffle
+        )
+
+
+createLineUp : Model -> List Model.Player -> Model
+createLineUp model players =
+    let
+        lineUp : Maybe Model.LineUp
+        lineUp =
+            case players of
+                [] ->
+                    Nothing
+
+                _ :: [] ->
+                    Nothing
+
+                _ :: _ :: [] ->
+                    Nothing
+
+                _ :: _ :: _ :: [] ->
+                    Nothing
+
+                a1 :: a2 :: b1 :: b2 :: _ ->
+                    Just (Model.LineUp a1 a2 b1 b2)
+    in
+    { model | lineUp = lineUp }
+
+
 filterRelevant : List Model.EmployeeInfo -> List Model.EmployeeInfo
 filterRelevant employees =
     List.filter (\e -> not (List.member { firstName = e.firstName, lastName = e.lastName } Config.excludedPlayers)) employees
@@ -41,7 +78,7 @@ refreshPlayers model employees =
         emps : List (Model.Selectable Model.Player)
         emps =
             List.map
-                (\e -> { selected = False, object = Model.Employee e })
+                (\e -> { selected = True, object = Model.Employee e })
                 (filterRelevant employees)
 
         guests : List (Model.Selectable Model.Player)
@@ -63,7 +100,7 @@ refreshPlayers model employees =
 
 togglePlayerSelection : Dict String (Model.Selectable Model.Player) -> Model.Player -> Dict String (Model.Selectable Model.Player)
 togglePlayerSelection players player =
-    Dict.update (Model.playerId player) (Maybe.map (\p -> { p | selected = True })) players
+    Dict.update (Model.playerId player) (Maybe.map (\p -> { p | selected = not p.selected })) players
 
 
 
