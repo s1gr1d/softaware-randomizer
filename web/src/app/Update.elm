@@ -4,7 +4,6 @@ import Config
 import Dict exposing (Dict)
 import Http
 import Json.Decode as Json
-import Material
 import Message exposing (Msg(..))
 import Model exposing (Model)
 import Random

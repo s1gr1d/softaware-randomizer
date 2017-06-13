@@ -77,7 +77,7 @@ renderGuest : Model.GuestInfo -> Html Msg
 renderGuest guest =
     img
         [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ]
-        , src ("./assets/guest-" ++ toString guest.number ++ ".png")
+        , src ("./assets/guest/" ++ toString guest.number ++ ".png")
         , alt ""
         , onClick (SelectionChanged (Model.Guest guest))
         ]
