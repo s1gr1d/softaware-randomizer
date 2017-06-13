@@ -327,3 +327,7 @@ __pycache__/
 *.xsd.cs
 
 # End of https://www.gitignore.io/api/vim,elm,fsharp,visualstudio,visualstudiocode
+
+
+# --- custom ---
+/web/src/main.js

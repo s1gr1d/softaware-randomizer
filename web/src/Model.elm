@@ -72,6 +72,16 @@ displayName player =
             "Gast " ++ toString guest.number
 
 
+pictureUrl : Player -> String
+pictureUrl player =
+    case player of
+        Employee employee ->
+            employee.pictureUrl
+
+        Guest guest ->
+            "./assets/guest/" ++ toString guest.number ++ ".png"
+
+
 toggleSelection : Selectable Player -> Selectable Player
 toggleSelection selectable =
     { selectable | selected = not selectable.selected }
