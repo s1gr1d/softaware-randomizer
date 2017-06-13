@@ -1,239 +1,37 @@
 module View exposing (..)
 
-import Css
-import Html exposing (Attribute, Html, button, div, img, li, option, p, select, text, ul)
-import Html.Attributes exposing (alt, class, disabled, selected, size, src)
-import Html.Events exposing (on, onClick)
+import Css exposing (..)
+import Dict
+import Html exposing (Html, button, div, img, text)
+import Html.Attributes
+import Html.Events
 import Material.Spinner as Loading
-import Message exposing (Msg(ClearLineUp, Randomize, SelectionChanged))
+import Message exposing (Msg(Randomize))
 import Model exposing (Model)
-
-
-styles : List Css.Mixin -> Attribute msg
-styles =
-    Css.asPairs >> Html.Attributes.style
-
-
-selectionOpacity : Model.Selectable Model.Player -> List Css.Mixin
-selectionOpacity selectable =
-    selectionToVisibility selectable.selected
-
-
-selectionToVisibility : Bool -> List Css.Mixin
-selectionToVisibility selected =
-    [ Css.opacity
-        (Css.num
-            (if selected then
-                1
-             else
-                0.47
-            )
-        )
-    ]
-
-
-playerColumns : Int
-playerColumns =
-    4
-
-
-playerPadding : Float
-playerPadding =
-    5
-
-
-renderPlayer : Model.Selectable Model.Player -> Html Msg
-renderPlayer selectable =
-    li
-        [ styles
-            ([ Css.property "width" ("calc(" ++ toString (100 // playerColumns) ++ "% - " ++ toString (2 * playerPadding) ++ "px)")
-             , Css.margin (Css.px playerPadding)
-             , Css.position Css.relative
-             ]
-                ++ selectionOpacity selectable
-            )
-        ]
-        [ case selectable.object of
-            Model.Employee employee ->
-                renderEmployee employee
-
-            Model.Guest guest ->
-                renderGuest guest
-        ]
-
-
-renderEmployee : Model.EmployeeInfo -> Html Msg
-renderEmployee employee =
-    img
-        [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ]
-        , src employee.pictureUrl
-        , alt employee.firstName
-        , onClick (SelectionChanged (Model.Employee employee))
-        ]
-        []
-
-
-renderGuest : Model.GuestInfo -> Html Msg
-renderGuest guest =
-    img
-        [ styles [ Css.maxWidth (Css.pct 100), Css.maxHeight (Css.pct 100) ]
-        , src ("./assets/guest/" ++ toString guest.number ++ ".png")
-        , alt ""
-        , onClick (SelectionChanged (Model.Guest guest))
-        ]
-        []
-
-
-white : Css.Color
-white =
-    Css.hex "ffffff"
-
-
-pct100 : Css.Pct
-pct100 =
-    Css.pct 100
+import Model.Getters as Get
+import Model.Types exposing (..)
+import View.Common exposing (styles)
+import View.LineUp exposing (renderLineUp)
+import View.Player exposing (renderPlayerSelectable)
 
 
 header : Html Msg
 header =
-    Html.header [ styles [ Css.backgroundColor (Css.hex "f9f9f9"), Css.padding (Css.vh 2.2), Css.displayFlex, Css.justifyContent Css.center, Css.alignItems Css.center, Css.boxShadow4 Css.zero (Css.px 3) (Css.px 6) (Css.rgba 0 0 0 0.17) ] ]
-        [ img [ styles [ Css.height (Css.vh 3) ], src "./assets/randomzr.png" ] []
-        ]
-
-
-view : Model -> Html Msg
-view model =
-    div [ styles [ Css.boxSizing Css.borderBox, Css.height (Css.vh 100), Css.width (Css.vw 100) ] ]
-        [ errorMessage model.error
-        , lineUp model.lineUp
-        , div [ styles [ Css.displayFlex, Css.flexDirection Css.column ] ]
-            [ header
-            , Loading.spinner
-                [ Loading.active model.loading ]
-            , ul [ styles [ Css.listStyleType Css.none, Css.margin (Css.rem 1), Css.padding Css.zero, Css.displayFlex, Css.flexWrap Css.wrap, Css.justifyContent Css.center ] ]
-                (List.map renderPlayer (Model.orderedPlayers model))
-            , button
-                [ disabled (not (Model.isRandomizable model))
-                , onClick Randomize
-                , styles
-                    [ Css.alignSelf Css.center
-                    , Css.margin (Css.rem 2.5)
-                    , Css.backgroundColor
-                        (if Model.isRandomizable model then
-                            Css.rgb 119 179 0
-                         else
-                            Css.rgb 200 200 200
-                        )
-                    , Css.color white
-                    , Css.textTransform Css.uppercase
-                    , Css.border Css.zero
-                    , Css.fontSize (Css.rem 1.5)
-                    , Css.padding2 (Css.rem 1) (Css.rem 4)
-                    , Css.borderRadius (Css.px 2)
-                    , Css.boxShadow5 Css.zero (Css.px 2) (Css.px 5) Css.zero (Css.rgba 0 0 0 0.26)
-                    , Css.property "transition" "box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-                    , Css.hover
-                        [ Css.color (Css.hex "ff0000")
-                        , Css.boxShadow5 Css.zero (Css.px 8) (Css.px 17) Css.zero (Css.rgba 0 0 0 0.2)
-                        ]
-                    ]
-                ]
-                [ text "Randomize" ]
-            ]
-        ]
-
-
-lineUp : Maybe Model.LineUp -> Html Msg
-lineUp optionalLineUp =
-    case optionalLineUp of
-        Nothing ->
-            Html.text ""
-
-        Just lineUp ->
-            div
-                [ onClick ClearLineUp
-                , styles
-                    [ Css.position Css.absolute
-                    , Css.width (Css.vw 100)
-                    , Css.height (Css.vh 100)
-                    , Css.backgroundColor (Css.rgba 0 0 0 0.4)
-                    , Css.zIndex (Css.int 100)
-                    , Css.displayFlex
-                    ]
-                ]
-                [ div
-                    [ styles
-                        [ Css.backgroundColor white
-                        , Css.width (Css.vw 90)
-                        , Css.left (Css.vw 5)
-                        , Css.alignSelf Css.center
-                        , Css.position Css.relative
-                        , Css.boxShadow5 Css.zero (Css.px 12) (Css.px 15) Css.zero (Css.rgba 0 0 0 0.24)
-                        ]
-                    ]
-                    [ Html.img
-                        [ src "./assets/lineup.png"
-                        , styles
-                            [ Css.paddingTop (Css.rem 2.5)
-                            , Css.height (Css.rem 3)
-                            , Css.property "object-fit" "contain"
-                            , Css.display Css.block
-                            , Css.margin2 Css.zero Css.auto
-                            ]
-                        ]
-                        []
-                    , div [ styles [ Css.padding (Css.rem 2) ] ]
-                        [ case lineUp of
-                            Model.Single single ->
-                                div []
-                                    [ playerRounded single.player1 [ Css.marginLeft (Css.pct 55) ]
-                                    , soccerTable
-                                    , playerRounded single.player2 [ Css.marginLeft (Css.pct 25) ]
-                                    ]
-
-                            Model.Double double ->
-                                div []
-                                    [ playerRounded double.teamA.player2 [ Css.marginLeft (Css.pct 34) ]
-                                    , playerRounded double.teamA.player1 [ Css.marginLeft (Css.pct 13) ]
-                                    , soccerTable
-                                    , playerRounded double.teamB.player1 [ Css.marginLeft (Css.pct 8) ]
-                                    , playerRounded double.teamB.player2 [ Css.marginLeft (Css.pct 14) ]
-                                    ]
-                        ]
-                    ]
-                ]
-
-
-soccerTable : Html Msg
-soccerTable =
-    Html.img
-        [ src "./assets/soccer-table.png"
-        , styles
-            [ Css.width pct100
-            , Css.margin2 (Css.rem 0.5) Css.zero
-            , Css.property "object-fit" "contain"
-            ]
-        ]
-        []
-
-
-playerRounded : Model.Player -> List Css.Mixin -> Html Msg
-playerRounded player style =
-    Html.img
+    Html.header
         [ styles
-            (style
-                ++ [ Css.width (Css.pct 22)
-                   , Css.property "object-fit" "contain"
-                   , Css.borderRadius (Css.pct 50)
-                   , Css.boxShadow4 Css.zero (Css.px 5) (Css.px 30) (Css.rgba 0 0 0 0.2)
-                   ]
-            )
-        , src (Model.pictureUrl player)
+            [ backgroundColor (hex "f9f9f9")
+            , padding (vh 2.2)
+            , displayFlex
+            , justifyContent center
+            , alignItems center
+            , boxShadow4 zero (px 3) (px 6) (rgba 0 0 0 0.17)
+            ]
         ]
-        []
+        [ img [ styles [ height (vh 3) ], Html.Attributes.src "./assets/randomzr.png" ] []
+        ]
 
 
-errorMessage : Maybe Model.Error -> Html Msg
+errorMessage : Maybe Error -> Html Msg
 errorMessage error =
     case error of
         Nothing ->
@@ -241,4 +39,56 @@ errorMessage error =
 
         _ ->
             div []
-                [ text (toString error) ]
+                [ Html.text (toString error) ]
+
+
+view : Model -> Html Msg
+view model =
+    div [ styles [ boxSizing borderBox, height (vh 100), width (vw 100) ] ]
+        [ errorMessage model.error
+        , renderLineUp model.lineUp
+        , div [ styles [ displayFlex, flexDirection column ] ]
+            [ header
+            , Loading.spinner
+                [ Loading.active model.loading ]
+            , div
+                [ styles
+                    [ listStyleType none
+                    , margin (Css.rem 1)
+                    , padding zero
+                    , displayFlex
+                    , flexWrap wrap
+                    , justifyContent center
+                    , alignItems start
+                    ]
+                ]
+                (List.map renderPlayerSelectable (model.players |> Dict.values))
+            , button
+                [ Html.Attributes.disabled (not (Get.isRandomizable model))
+                , Html.Events.onClick Randomize
+                , styles
+                    [ alignSelf center
+                    , margin (Css.rem 2.5)
+                    , backgroundColor
+                        (if Get.isRandomizable model then
+                            rgb 119 179 0
+                         else
+                            rgb 200 200 200
+                        )
+                    , color (hex "ffffff")
+                    , textTransform uppercase
+                    , border zero
+                    , fontSize (Css.rem 1.5)
+                    , padding2 (Css.rem 1) (Css.rem 4)
+                    , borderRadius (px 2)
+                    , boxShadow5 zero (px 2) (px 5) zero (rgba 0 0 0 0.26)
+                    , property "transition" "box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+                    , hover
+                        [ color (hex "ff0000")
+                        , boxShadow5 zero (px 8) (px 17) zero (rgba 0 0 0 0.2)
+                        ]
+                    ]
+                ]
+                [ Html.text "Randomize" ]
+            ]
+        ]

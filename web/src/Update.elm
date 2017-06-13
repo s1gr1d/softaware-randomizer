@@ -76,22 +76,24 @@ refreshPlayers model employees =
         relevantEmployees =
             List.filter (\e -> not (List.member { firstName = e.firstName, lastName = e.lastName } Config.excludedPlayers)) employees
 
-        emps : List (Selectable Player)
+        emps : List Player
         emps =
             List.map
-                (\e -> { selected = False, object = Employee e })
+                (\e -> Employee e)
                 relevantEmployees
 
-        guests : List (Selectable Player)
+        guests : List Player
         guests =
             List.map
-                (\g -> { selected = False, object = Guest { number = g } })
+                (\g -> Guest { number = g })
                 (List.range 1 Config.numberOfGuests)
 
         players : Dict String (Selectable Player)
         players =
             Dict.fromList
                 ((emps ++ guests)
+                    |> List.sortWith (\a b -> Get.comparePlayers a b)
+                    |> List.map (\p -> { selected = False, object = p })
                     |> List.map (\p -> ( Get.identifier p.object, p ))
                 )
     in

@@ -57,28 +57,21 @@ isRandomizable model =
     (model |> selectedPlayers |> List.length) >= 2
 
 
-orderedPlayers : Model -> List (Selectable Player)
-orderedPlayers model =
-    let
-        playerOrder : Player -> Player -> Order
-        playerOrder a b =
-            case a of
-                Employee ae ->
-                    case b of
-                        Employee be ->
-                            compare ae.lastName be.lastName
+comparePlayers : Player -> Player -> Order
+comparePlayers a b =
+    case a of
+        Employee ae ->
+            case b of
+                Employee be ->
+                    compare ae.lastName be.lastName
 
-                        Guest bg ->
-                            LT
+                Guest bg ->
+                    LT
 
-                Guest ag ->
-                    case b of
-                        Employee be ->
-                            GT
+        Guest ag ->
+            case b of
+                Employee be ->
+                    GT
 
-                        Guest bg ->
-                            compare ag.number bg.number
-    in
-    model.players
-        |> Dict.values
-        |> List.sortWith (\a b -> playerOrder a.object b.object)
+                Guest bg ->
+                    compare ag.number bg.number
