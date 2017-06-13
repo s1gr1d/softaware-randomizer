@@ -1,12 +1,14 @@
 module Config exposing (..)
 
+
+assetPath : String
+assetPath =
+    "assets/"
+
+
 scrapingLink : String
 scrapingLink =
     "https://softaware-randomizer-api.azurewebsites.net/api/scrape?code=yBwvvbq/TaZO8wj0TUvnMjdaZTUKq64oSe14qaK0QL8IicRLLdDZLw=="
-
-
-
--- Make sure that enough icons are available in /assets
 
 
 numberOfGuests : Int

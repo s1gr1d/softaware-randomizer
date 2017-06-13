@@ -1,13 +1,13 @@
 module Message exposing (..)
 
 import Http
-import Model
+import Model.Types exposing (EmployeeInfo, Player)
 
 
 type Msg
     = Randomize
-    | CreateLineUp (List Model.Player)
+    | CreateLineUp (List Player)
     | ClearLineUp
-    | SelectionChanged Model.Player
+    | SelectionChanged Player
     | LoadEmployees
-    | EmployeeInfosLoaded (Result Http.Error (List Model.EmployeeInfo))
+    | EmployeeInfosLoaded (Result Http.Error (List EmployeeInfo))
