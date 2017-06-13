@@ -6,6 +6,8 @@ import Http
 import Json.Decode as Json
 import Message exposing (Msg(..))
 import Model exposing (Model)
+import Model.Getters as Get
+import Model.Types exposing (..)
 import Random
 import Random.List
 
@@ -31,7 +33,7 @@ update msg model =
                     ( refreshPlayers model result, Cmd.none )
 
                 Err error ->
-                    ( { model | error = Just (Model.HttpError error) }, Cmd.none )
+                    ( { model | error = Just (HttpError error) }, Cmd.none )
 
         SelectionChanged player ->
             ( { model | players = togglePlayerSelection model.players player }, Cmd.none )
@@ -40,15 +42,13 @@ update msg model =
 randomize : Model -> Cmd Msg
 randomize model =
     Random.generate (\players -> CreateLineUp players)
-        (Model.selectedPlayers model
-            |> Random.List.shuffle
-        )
+        (model |> Get.selectedPlayers |> Random.List.shuffle)
 
 
-createLineUp : Model -> List Model.Player -> Model
+createLineUp : Model -> List Player -> Model
 createLineUp model players =
     let
-        lineUp : Maybe Model.LineUp
+        lineUp : Maybe LineUp
         lineUp =
             case players of
                 [] ->
@@ -58,75 +58,74 @@ createLineUp model players =
                     Nothing
 
                 a1 :: a2 :: [] ->
-                    Just (Model.Single (Model.SingleType a1 a2))
+                    Just (Single { player1 = a1, player2 = a2 })
 
                 a1 :: a2 :: _ :: [] ->
-                    Just (Model.Single (Model.SingleType a1 a2))
+                    Just (Single { player1 = a1, player2 = a2 })
 
                 a1 :: a2 :: b1 :: b2 :: _ ->
-                    Just (Model.Double (Model.DoubleType { player1 = a1, player2 = a2 } { player1 = b1, player2 = b2 }))
+                    Just (Double { teamA = { player1 = a1, player2 = a2 }, teamB = { player1 = b1, player2 = b2 } })
     in
     { model | lineUp = lineUp }
 
 
-filterRelevant : List Model.EmployeeInfo -> List Model.EmployeeInfo
-filterRelevant employees =
-    List.filter (\e -> not (List.member { firstName = e.firstName, lastName = e.lastName } Config.excludedPlayers)) employees
-
-
-refreshPlayers : Model -> List Model.EmployeeInfo -> Model
+refreshPlayers : Model -> List EmployeeInfo -> Model
 refreshPlayers model employees =
     let
-        emps : List (Model.Selectable Model.Player)
+        relevantEmployees : List EmployeeInfo
+        relevantEmployees =
+            List.filter (\e -> not (List.member { firstName = e.firstName, lastName = e.lastName } Config.excludedPlayers)) employees
+
+        emps : List Player
         emps =
             List.map
-                (\e -> { selected = False, object = Model.Employee e })
-                (filterRelevant employees)
+                (\e -> Employee e)
+                relevantEmployees
 
-        guests : List (Model.Selectable Model.Player)
+        guests : List Player
         guests =
             List.map
-                (\g -> { selected = False, object = Model.Guest (Model.GuestInfo g) })
+                (\g -> Guest { number = g })
                 (List.range 1 Config.numberOfGuests)
 
-        players : Dict String (Model.Selectable Model.Player)
+        players : Dict String (Selectable Player)
         players =
             Dict.fromList
-                (emps
-                    ++ guests
-                    |> List.map (\p -> ( Model.playerId p.object, p ))
+                ((emps ++ guests)
+                    |> List.sortWith (\a b -> Get.comparePlayers a b)
+                    |> List.map (\p -> { selected = False, object = p })
+                    |> List.map (\p -> ( Get.identifier p.object, p ))
                 )
     in
     { model | players = players, error = Nothing, loading = False }
 
 
-togglePlayerSelection : Dict String (Model.Selectable Model.Player) -> Model.Player -> Dict String (Model.Selectable Model.Player)
+togglePlayerSelection : Dict String (Selectable Player) -> Player -> Dict String (Selectable Player)
 togglePlayerSelection players player =
-    Dict.update (Model.playerId player) (Maybe.map (\p -> { p | selected = not p.selected })) players
+    Dict.update
+        (Get.identifier player)
+        (Maybe.map (\p -> { p | selected = not p.selected }))
+        players
 
 
-
---https://medium.com/elm-shorts/how-to-turn-a-msg-into-a-cmd-msg-in-elm-5dd095175d84
-
-
-init : Model -> ( Model, Cmd Msg )
-init defaultModel =
-    update LoadEmployees { defaultModel | loading = True }
+init : ( Model, Cmd Msg )
+init =
+    let
+        model =
+            Model.defaultModel
+    in
+    ( { model | loading = True }, loadEmployees )
 
 
 loadEmployees : Cmd Msg
 loadEmployees =
-    let
-        url =
-            Config.scrapingLink
-    in
-    Http.send EmployeeInfosLoaded (Http.get url decodeJson)
+    Http.send EmployeeInfosLoaded (Http.get Config.scrapingLink decodeJson)
 
 
-decodeJson : Json.Decoder (List Model.EmployeeInfo)
+decodeJson : Json.Decoder (List EmployeeInfo)
 decodeJson =
     Json.list
-        (Json.map3 Model.EmployeeInfo
+        (Json.map3 EmployeeInfo
             (Json.at [ "firstName" ] Json.string)
             (Json.at [ "lastName" ] Json.string)
             (Json.at [ "pictureUrl" ] Json.string)
