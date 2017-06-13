@@ -26,7 +26,7 @@ map player fromEmployee fromGuest =
 identifier : Player -> String
 identifier player =
     map player
-        (\e -> e.firstName ++ "." ++ e.lastName)
+        (\e -> e.lastName ++ "." ++ e.firstName)
         (\g -> "guest." ++ toString g.number)
 
 
