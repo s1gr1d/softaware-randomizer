@@ -1,0 +1,29 @@
+{
+  "name": "softaware-randomizer-frontend",
+  "version": "1.0.0",
+  "description": "Team Randomizer for the softaware Table Soccer Competitions",
+  "scripts": {
+    "start": "webpack-dev-server --config build/webpack.dev.config.js",
+    "build": "webpack -p --config build/webpack.prod.config.js"
+  },
+  "author": "Bernhard Mayr <bernhard@mayr.io>",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bemayr/softaware-randomizer"
+  },
+  "dependencies": {
+    "normalize.css": "7.0.0"
+  },
+  "devDependencies": {
+    "css-loader": "0.28.4",
+    "elm": "0.18.0",
+    "elm-webpack-loader": "4.3.1",
+    "html-webpack-plugin": "2.28.0",
+    "path": "0.12.7",
+    "style-loader": "0.18.2",
+    "webpack": "2.6.1",
+    "webpack-dev-server": "2.4.5",
+    "webpack-merge": "4.1.0"
+  }
+}

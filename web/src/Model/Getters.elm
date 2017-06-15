@@ -75,3 +75,19 @@ comparePlayers a b =
 
                 Guest bg ->
                     compare ag.number bg.number
+
+
+moderation : LineUp -> String
+moderation lineUp =
+    case lineUp of
+        Single single ->
+            displayName single.player1 ++ " gegen " ++ displayName single.player2
+
+        Double double ->
+            displayName double.teamA.player1
+                ++ " & "
+                ++ displayName double.teamA.player2
+                ++ " gegen "
+                ++ displayName double.teamB.player1
+                ++ " & "
+                ++ displayName double.teamB.player2

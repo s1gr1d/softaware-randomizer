@@ -10,6 +10,7 @@ import Model.Getters as Get
 import Model.Types exposing (..)
 import Random
 import Random.List
+import Speech
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -22,7 +23,7 @@ update msg model =
             ( { model | lineUp = Nothing }, Cmd.none )
 
         CreateLineUp players ->
-            ( createLineUp model players, Cmd.none )
+            createLineUp model players
 
         LoadEmployees ->
             ( model, loadEmployees )
@@ -45,7 +46,7 @@ randomize model =
         (model |> Get.selectedPlayers |> Random.List.shuffle)
 
 
-createLineUp : Model -> List Player -> Model
+createLineUp : Model -> List Player -> ( Model, Cmd Msg )
 createLineUp model players =
     let
         lineUp : Maybe LineUp
@@ -65,8 +66,17 @@ createLineUp model players =
 
                 a1 :: a2 :: b1 :: b2 :: _ ->
                     Just (Double { teamA = { player1 = a1, player2 = a2 }, teamB = { player1 = b1, player2 = b2 } })
+
+        command : Cmd Msg
+        command =
+            case lineUp of
+                Nothing ->
+                    Cmd.none
+
+                Just lineUp ->
+                    Speech.speak (Get.moderation lineUp)
     in
-    { model | lineUp = lineUp }
+    ( { model | lineUp = lineUp }, command )
 
 
 refreshPlayers : Model -> List EmployeeInfo -> Model
