@@ -40,6 +40,7 @@ script:
 deploy:
   provider: pages
   skip_cleanup: true
+  local_dir: dist
   target_branch: gh-pages
   fqdn: randomizer.mayr.io
   github_token: $GITHUB_TOKEN
