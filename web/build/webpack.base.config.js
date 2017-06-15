@@ -34,13 +34,13 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(sourcePath, "index.ejs"),
       filename: "index.html"
-    }),
-    new CopyWebpackPlugin([
-      {
-        from: path.join(sourcePath, "assets/"),
-        to: path.join(distPath, "assets/")
-      }
-    ]),
-    new FaviconsWebpackPlugin(path.join(graphicsPath, "favicon.png"))
+    })
+    // new CopyWebpackPlugin([
+    //   {
+    //     from: path.join(sourcePath, "assets/"),
+    //     to: path.join(distPath, "assets/")
+    //   }
+    // ]),
+    // new FaviconsWebpackPlugin(path.join(graphicsPath, "favicon.png"))
   ]
 };
