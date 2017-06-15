@@ -1,17 +1,14 @@
 language: node_js
 node_js:
   - "7"
-
+cache:
+  directories:
+    - "web/node_modules"
+    - "web/elm-stuff"
 branches:
   only:
   - frontend
-
 script: sh -c 'cd web && npm install && npm run build'
-
-cache:
-  directories:
-    - "node_modules"
-
 
 # deploy to github pages
 deploy:
