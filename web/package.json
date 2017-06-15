@@ -4,8 +4,7 @@
   "description": "Team Randomizer for the softaware Table Soccer Competitions",
   "scripts": {
     "start": "webpack-dev-server --config build/webpack.dev.config.js",
-    "build:disabled": "webpack -p --config build/webpack.prod.config.js",
-    "build": "node -e \"console.log('how long does this take')\""
+    "build": "webpack -p --config build/webpack.prod.config.js"
   },
   "author": "Bernhard Mayr <bernhard@mayr.io>",
   "license": "ISC",
