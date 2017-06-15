@@ -34,14 +34,16 @@ install:
   - elm package install --yes
 
 script:
-  - cd web
   - npm run build
+
 
 # deploy to github pages
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: "/web/dist"
+  local_dir: /web/dist
+  target_branch: gh-pages
+  fqdn: randomizer.mayr.io
   github_token: $GITHUB_TOKEN
   on:
     branch: frontend
