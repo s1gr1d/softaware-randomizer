@@ -330,4 +330,4 @@ __pycache__/
 
 
 # --- custom ---
-/web/src/main.js
+web/dist/

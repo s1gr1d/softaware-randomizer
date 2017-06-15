@@ -1,5 +1,5 @@
-var webpackBaseConfig = require('./webpack.base.config');
-var merge = require('webpack-merge');
+var webpackBaseConfig = require("./webpack.base.config");
+var merge = require("webpack-merge");
 
 // modify the HtmlWebpackPlugin to minify the HTML for production-build
 // TODO: find a better way to merge plugins, index-based merging is meant to fail
@@ -10,11 +10,10 @@ webpackBaseConfig.plugins[0].options.minify = {
   removeAttributeQuotes: true,
   removeComments: true,
   removeEmptyAttributes: true,
-  removeEmptyElements: true,
+  removeEmptyElements: false,
   removeOptionalTags: true,
   removeRedundantAttributes: true,
   useShortDoctype: true
 };
 
-module.exports = merge(webpackBaseConfig, {
-});
+module.exports = merge(webpackBaseConfig, {});
