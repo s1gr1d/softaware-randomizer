@@ -4,4 +4,4 @@ node_js:
 cache:
   directories:
     - "node_modules"
-script: sh -c 'cd web && npm run build'
+script: sh -c 'cd web && npm install && npm run build'
