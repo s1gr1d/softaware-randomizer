@@ -28,6 +28,9 @@ install:
   - npm --version
   - cd web
   - npm install
+  - mv node_modules/.bin/elm-make node_modules/.bin/elm-make-old
+  - printf '%s\n\n' '#!/bin/bash' 'echo "Running elm-make with sysconfcpus -n 2"' '$TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old "$@"' > node_modules/.bin/elm-make
+  - chmod +x node_modules/.bin/elm-make
   - elm package install --yes
 
 script:
