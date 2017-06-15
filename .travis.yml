@@ -46,3 +46,9 @@ deploy:
   github_token: $GITHUB_TOKEN
   on:
     branch: frontend
+
+# prevent email notification on success
+notifications:
+  email:
+    on_success: never
+    on_failure: always
