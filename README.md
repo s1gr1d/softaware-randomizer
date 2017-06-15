@@ -1,5 +1,7 @@
 # softaware-randomizer
 
+[![Build Status](https://travis-ci.org/bemayr/softaware-randomizer.svg?branch=master)](https://travis-ci.org/bemayr/softaware-randomizer)
+
 
 ## Backend (Azure API Function in **F#**)
 - https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local
