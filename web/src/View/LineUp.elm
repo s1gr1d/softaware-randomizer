@@ -41,8 +41,8 @@ renderLineUp optionalLineUp =
                     [ Html.img
                         [ Html.Attributes.src "./assets/lineup.png"
                         , styles
-                            [ Css.paddingTop (Css.rem 2.5)
-                            , Css.height (Css.rem 3)
+                            [ Css.paddingTop (Css.rem 1.5)
+                            , Css.height (Css.rem 2)
                             , Css.property "object-fit" "contain"
                             , Css.display Css.block
                             , Css.margin2 Css.zero Css.auto

@@ -60,7 +60,7 @@ renderPlayerSelectable selectable =
             4
 
         playerPadding =
-            5
+            2
 
         player =
             selectable.object

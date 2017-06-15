@@ -20,14 +20,20 @@ header =
     Html.header
         [ styles
             [ backgroundColor (hex "f9f9f9")
-            , padding (vh 2.2)
             , displayFlex
             , justifyContent center
             , alignItems center
             , boxShadow4 zero (px 3) (px 6) (rgba 0 0 0 0.17)
             ]
         ]
-        [ img [ styles [ height (vh 3) ], Html.Attributes.src "./assets/randomzr.png" ] []
+        [ img
+            [ styles
+                [ Css.padding (Css.rem 1)
+                , Css.height (Css.rem 1.7)
+                ]
+            , Html.Attributes.src "./assets/randomzr.png"
+            ]
+            []
         ]
 
 
@@ -68,7 +74,7 @@ view model =
                 , Html.Events.onClick Randomize
                 , styles
                     [ alignSelf center
-                    , margin (Css.rem 2.5)
+                    , margin (Css.rem 1)
                     , backgroundColor
                         (if Get.isRandomizable model then
                             rgb 119 179 0
@@ -78,7 +84,7 @@ view model =
                     , color (hex "ffffff")
                     , textTransform uppercase
                     , border zero
-                    , fontSize (Css.rem 1.5)
+                    , fontSize (Css.rem 1)
                     , padding2 (Css.rem 1) (Css.rem 4)
                     , borderRadius (px 2)
                     , boxShadow5 zero (px 2) (px 5) zero (rgba 0 0 0 0.26)

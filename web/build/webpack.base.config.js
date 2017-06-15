@@ -1,13 +1,16 @@
 var path = require("path");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
+var CopyWebpackPlugin = require("copy-webpack-plugin");
+var FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 
 let sourcePath = path.join(__dirname, "/../src/");
-let distributionPath = path.join(__dirname, "/../dist/");
+let distPath = path.join(__dirname, "/../dist/");
+let graphicsPath = path.join(__dirname, "/../_graphics/");
 
 module.exports = {
   entry: path.join(sourcePath, "index.js"),
   output: {
-    path: distributionPath,
+    path: distPath,
     filename: "bundle.js"
   },
   module: {
@@ -31,6 +34,13 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(sourcePath, "index.ejs"),
       filename: "index.html"
-    })
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(sourcePath, "assets/"),
+        to: path.join(distPath, "assets/")
+      }
+    ]),
+    new FaviconsWebpackPlugin(path.join(graphicsPath, "favicon.png"))
   ]
 };
