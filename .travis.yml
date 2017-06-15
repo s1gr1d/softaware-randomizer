@@ -5,3 +5,7 @@ cache:
   directories:
     - "node_modules"
 script: sh -c 'cd web && npm install && npm run build'
+
+branches:
+  only:
+  - frontend
