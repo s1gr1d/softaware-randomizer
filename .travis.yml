@@ -1,14 +1,38 @@
 language: node_js
 node_js:
   - "7"
+
 cache:
   directories:
-    - "web/node_modules"
-    - "web/elm-stuff"
+    - web/node_modules
+    - web/elm-stuff/build-artifacts
+    - sysconfcpus
+
 branches:
   only:
   - frontend
-script: cd web && npm install && npm run build
+
+before_install:
+  - | # epic build time improvement - see https://github.com/elm-lang/elm-compiler/issues/1473#issuecomment-245704142
+    if [ ! -d sysconfcpus/bin ];
+    then
+      git clone https://github.com/obmarg/libsysconfcpus.git;
+      cd libsysconfcpus;
+      ./configure --prefix=$TRAVIS_BUILD_DIR/sysconfcpus;
+      make && make install;
+      cd ..;
+    fi
+
+install:
+  - node --version
+  - npm --version
+  - cd web
+  - npm install
+  - elm package install --yes
+
+script:
+  - cd web
+  - npm run build
 
 # deploy to github pages
 deploy:
