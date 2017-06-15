@@ -1,11 +1,23 @@
 language: node_js
 node_js:
   - "7"
-cache:
-  directories:
-    - "node_modules"
-script: sh -c 'cd web && npm install && npm run build'
 
 branches:
   only:
   - frontend
+
+script: sh -c 'cd web && npm install && npm run build'
+
+cache:
+  directories:
+    - "node_modules"
+
+
+# deploy to github pages
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: "/web/dist"
+  github_token: $GITHUB_TOKEN
+  on:
+    branch: frontend
