@@ -31,16 +31,19 @@ install:
   - printf '%s\n\n' '#!/bin/bash' 'echo "Running elm-make with sysconfcpus -n 2"' '$TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old "$@"' > node_modules/.bin/elm-make
   - chmod +x node_modules/.bin/elm-make
   - elm package install --yes
+  - cd ..
 
 script:
+  - cd web
   - npm run build
+  - cd ..
 
 
 # deploy to github pages
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: dist
+  local_dir: web/dist
   target_branch: gh-pages
   fqdn: randomizer.mayr.io
   github_token: $GITHUB_TOKEN
