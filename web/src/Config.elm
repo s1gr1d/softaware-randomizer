@@ -8,7 +8,7 @@ assetPath =
 
 scrapingLink : String
 scrapingLink =
-    "https://softaware-randomizer-api.azurewebsites.net/api/scrape?code=yBwvvbq/TaZO8wj0TUvnMjdaZTUKq64oSe14qaK0QL8IicRLLdDZLw=="
+    "https://randomizer-api.azurewebsites.net/api/scrape?code=vI1f1U4GgDqg1guQArJj3aLx00VxA/l9EFJ43tUO2Dz3mIGINrnb4g=="
 
 
 numberOfGuests : Int
