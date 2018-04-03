@@ -3,7 +3,8 @@ module Update exposing (..)
 import Config
 import Dict exposing (Dict)
 import Http
-import Json.Decode as Json
+import Json.Decode
+import Json.Encode
 import Message exposing (Msg(..))
 import Model exposing (Model)
 import Model.Getters as Get
@@ -11,6 +12,7 @@ import Model.Types exposing (..)
 import Random
 import Random.List
 import Speech
+import Storage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -25,13 +27,23 @@ update msg model =
         CreateLineUp players ->
             createLineUp model players
 
-        LoadEmployees ->
-            ( model, loadEmployees )
+        LoadEmployeeInfoFromStorage ->
+            ( model, tryLoadEmployeeInfoFromStorage )
 
-        EmployeeInfosLoaded result ->
+        EmployeeInfoLoaded result ->
             case result of
                 Ok result ->
-                    ( refreshPlayers model result, Cmd.none )
+                    ( refreshPlayers model result, refreshEmployeeInfoFromServer )
+                Err message ->
+                    ( { model | error = Just (Error message) }, refreshEmployeeInfoFromServer )
+
+        LoadEmployeeInfoFromServer ->
+            (model, refreshEmployeeInfoFromServer)
+
+        EmployeeInfoRefreshed result ->
+            case result of
+                Ok result ->
+                    ( refreshPlayers model result, updateEmployeeInfo result )
 
                 Err error ->
                     ( { model | error = Just (HttpError error) }, Cmd.none )
@@ -124,19 +136,49 @@ init =
         model =
             Model.defaultModel
     in
-    ( { model | loading = True }, loadEmployees )
+    ( { model | loading = True }, tryLoadEmployeeInfoFromStorage )
 
 
-loadEmployees : Cmd Msg
-loadEmployees =
-    Http.send EmployeeInfosLoaded (Http.get Config.scrapingLink decodeJson)
+refreshEmployeeInfoFromServer : Cmd Msg
+refreshEmployeeInfoFromServer =
+    Http.send EmployeeInfoRefreshed (Http.get Config.scrapingLink employeeDecoder)
+
+updateEmployeeInfo : (List EmployeeInfo) -> Cmd Msg
+updateEmployeeInfo employeeInfo =
+    Storage.storeObject ("employeeInfo", employeeInfo |> encodeEmployees)
+
+employeesInfoLoaded : Sub Msg
+employeesInfoLoaded =
+  let
+    retrieval (key, json) =
+      EmployeeInfoLoaded (Json.Decode.decodeValue employeeDecoder json)
+  in
+    Storage.objectRetrieved retrieval
+
+tryLoadEmployeeInfoFromStorage : Cmd msg
+tryLoadEmployeeInfoFromStorage = Storage.retrieveObject "employeeInfo"
 
 
-decodeJson : Json.Decoder (List EmployeeInfo)
-decodeJson =
-    Json.list
-        (Json.map3 EmployeeInfo
-            (Json.at [ "firstName" ] Json.string)
-            (Json.at [ "lastName" ] Json.string)
-            (Json.at [ "pictureUrl" ] Json.string)
+employeeDecoder : Json.Decode.Decoder (List EmployeeInfo)
+employeeDecoder =
+    Json.Decode.list
+        (Json.Decode.map3 EmployeeInfo
+            (Json.Decode.at [ "firstName" ] Json.Decode.string)
+            (Json.Decode.at [ "lastName" ] Json.Decode.string)
+            (Json.Decode.at [ "pictureUrl" ] Json.Decode.string)
+        )
+
+
+encodeEmployees : List EmployeeInfo -> Json.Encode.Value
+encodeEmployees employees =
+    Json.Encode.list
+        (employees
+            |> List.map
+                (\e ->
+                    Json.Encode.object
+                        [ ( "firstName", Json.Encode.string e.firstName )
+                        , ( "lastName", Json.Encode.string e.lastName )
+                        , ( "pictureUrl", Json.Encode.string e.pictureUrl )
+                        ]
+                )
         )

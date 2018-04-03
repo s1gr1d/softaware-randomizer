@@ -3,7 +3,7 @@ module Main exposing (..)
 import Html
 import Message exposing (Msg)
 import Model exposing (Model)
-import Update exposing (init, update)
+import Update exposing (init, update, employeesInfoLoaded)
 import View exposing (view)
 
 
@@ -23,4 +23,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.batch
+        [
+            employeesInfoLoaded
+        ]

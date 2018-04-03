@@ -53,7 +53,7 @@ view model =
     div [ styles [ boxSizing borderBox, height (vh 100), width (vw 100) ] ]
         [ errorMessage model.error
         , renderLineUp model.lineUp
-        , div [ styles [ displayFlex, flexDirection column ] ]
+        , div [ styles [ displayFlex, flexDirection column, height (pct 100) ] ]
             [ header
             , Loading.spinner
                 [ Loading.active model.loading ]
@@ -63,9 +63,12 @@ view model =
                     , margin (Css.rem 1)
                     , padding zero
                     , displayFlex
+                    , flexGrow (int 1)
+                    , flexShrink (int 1)
                     , flexWrap wrap
-                    , justifyContent center
+                    , justifyContent left
                     , alignItems start
+                    , overflow scroll
                     ]
                 ]
                 (List.map renderPlayerSelectable (model.players |> Dict.values))

@@ -9,5 +9,7 @@ type Msg
     | CreateLineUp (List Player)
     | ClearLineUp
     | SelectionChanged Player
-    | LoadEmployees
-    | EmployeeInfosLoaded (Result Http.Error (List EmployeeInfo))
+    | LoadEmployeeInfoFromStorage
+    | LoadEmployeeInfoFromServer
+    | EmployeeInfoLoaded (Result String (List EmployeeInfo))
+    | EmployeeInfoRefreshed (Result Http.Error (List EmployeeInfo))

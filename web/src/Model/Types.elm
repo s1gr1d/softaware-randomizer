@@ -48,3 +48,4 @@ type Player
 
 type Error
     = HttpError Http.Error
+    | Error String

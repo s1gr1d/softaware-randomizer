@@ -61,10 +61,10 @@ renderLineUp optionalLineUp =
                             Double double ->
                                 div []
                                     [ renderPlayerRounded double.teamA.player2 [ Css.marginLeft (Css.pct 34) ]
-                                    , renderPlayerRounded double.teamA.player1 [ Css.marginLeft (Css.pct 13) ]
+                                    , renderPlayerRounded double.teamA.player1 [ Css.marginLeft (Css.pct 19) ]
                                     , soccerTable
-                                    , renderPlayerRounded double.teamB.player1 [ Css.marginLeft (Css.pct 8) ]
-                                    , renderPlayerRounded double.teamB.player2 [ Css.marginLeft (Css.pct 14) ]
+                                    , renderPlayerRounded double.teamB.player1 [ Css.marginLeft (Css.pct 3) ]
+                                    , renderPlayerRounded double.teamB.player2 [ Css.marginLeft (Css.pct 21) ]
                                     ]
                         ]
                     ]
