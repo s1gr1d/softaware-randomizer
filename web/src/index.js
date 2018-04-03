@@ -12,14 +12,7 @@ app.ports.speak.subscribe(function (text) {
 });
 
 // bind localStorage API to Elm Module
-var storage = window.localStorage || {
-  setItem(k, v) {
-    this[k] = v;
-  },
-  getItem(k) {
-    return this[k];
-  }
-};
+var storage = window.localStorage;
 
 function storeObject(key, object) {
   storage.setItem(key, JSON.stringify(object));
@@ -29,7 +22,9 @@ function retrieveObject(key) {
   return value ? JSON.parse(value) : null;
 }
 
-app.ports.storeObject.subscribe(function ([key, state]) {
+app.ports.storeObject.subscribe(function (args) {
+  const key = args[0];
+  const state = args[1];
   storeObject(key, state);
 });
 app.ports.retrieveObject.subscribe(function (key) {
