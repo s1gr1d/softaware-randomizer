@@ -23,6 +23,7 @@ header =
             , displayFlex
             , justifyContent center
             , alignItems center
+            , minHeight (px 60)
             , boxShadow4 zero (px 3) (px 6) (rgba 0 0 0 0.17)
             ]
         ]
@@ -63,12 +64,10 @@ view model =
                     , margin (Css.rem 1)
                     , padding zero
                     , displayFlex
-                    , flexGrow (int 1)
-                    , flexShrink (int 1)
                     , flexWrap wrap
                     , justifyContent left
                     , alignItems start
-                    , overflow scroll
+                    , overflowY auto
                     ]
                 ]
                 (List.map renderPlayerSelectable (model.players |> Dict.values))
