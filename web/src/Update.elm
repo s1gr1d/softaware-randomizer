@@ -104,20 +104,28 @@ refreshPlayers model employees =
                 (\e -> Employee e)
                 relevantEmployees
 
+        storagePlayers : List Player
+        storagePlayers = List.map (\e -> e.object) (Dict.values model.players)
+        newEmps: List Player
+        newEmps = List.filter (\e -> not(List.member e storagePlayers )) emps
+
         guests : List Player
         guests =
             List.map
                 (\g -> Guest { number = g })
                 (List.range 1 Config.numberOfGuests)
 
-        players : Dict String (Selectable Player)
-        players =
+        newPlayers : Dict String (Selectable Player)
+        newPlayers =
             Dict.fromList
-                ((emps ++ guests)
+                ((newEmps ++ guests)
                     |> List.sortWith (\a b -> Get.comparePlayers a b)
                     |> List.map (\p -> { selected = False, object = p })
                     |> List.map (\p -> ( Get.identifier p.object, p ))
                 )
+        
+        players : Dict String (Selectable Player)
+        players = Dict.union newPlayers model.players
     in
     { model | players = players, error = Nothing, loading = False }
 
