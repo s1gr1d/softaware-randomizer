@@ -40,7 +40,7 @@ displayName player =
 pictureUrl : Player -> String
 pictureUrl player =
     map player
-        (\e -> e.pictureUrl)
+        (\e -> Config.assetPath ++ "flatmates/" ++ e.pictureUrl)
         (\g -> Config.assetPath ++ "guest/" ++ toString g.number ++ ".png")
 
 

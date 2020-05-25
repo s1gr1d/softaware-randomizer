@@ -138,13 +138,39 @@ togglePlayerSelection players player =
         players
 
 
-init : ( Model, Cmd Msg )
+{- init : ( Model, Cmd Msg )
 init =
     let
         model =
             Model.defaultModel
     in
-    ( { model | loading = True }, tryLoadEmployeeInfoFromStorage )
+    ( { model | loading = True }, loadEmployees ) -}
+
+init : ( Model, Cmd Msg )
+init =
+    let
+        model =
+            Model.defaultModel
+
+        guests : List Player
+        guests =
+            List.map
+                (\g -> Guest { number = g })
+                (List.range 1 Config.numberOfGuests)
+
+        players =
+            Dict.fromList
+                (([
+                    (Employee ( EmployeeInfo "Bernhard" "" "bernhard.jpg") ),
+                    (Employee ( EmployeeInfo "Mona" "" "mona.jpg") ),
+                    (Employee ( EmployeeInfo "Gordi" "" "gordi.jpg") ),
+                    (Employee ( EmployeeInfo "Goran" "" "goran.jpg") )] ++ guests)
+                    |> List.sortWith (\a b -> Get.comparePlayers a b)
+                    |> List.map (\p -> { selected = False, object = p })
+                    |> List.map (\p -> ( Get.identifier p.object, p ))
+                )
+    in
+    ( { model | players = players } , Cmd.none )
 
 
 refreshEmployeeInfoFromServer : Cmd Msg
