@@ -40,7 +40,7 @@ errorMessage error =
 
         _ ->
             div []
-                [ Html.text (toString error) ]
+                [ text (Debug.toString error) ]
 
 
 view : Model -> Html Msg

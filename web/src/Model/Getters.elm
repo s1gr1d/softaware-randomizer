@@ -6,6 +6,7 @@ import Model exposing (Model)
 import Model.Types exposing (..)
 
 
+
 -- HELPERS
 
 
@@ -27,21 +28,21 @@ identifier : Player -> String
 identifier player =
     map player
         (\e -> e.lastName ++ "." ++ e.firstName)
-        (\g -> "guest." ++ toString g.number)
+        (\g -> "guest." ++ String.fromInt g.number)
 
 
 displayName : Player -> String
 displayName player =
     map player
         (\e -> e.firstName)
-        (\g -> "Gast " ++ toString g.number)
+        (\g -> "Gast " ++ String.fromInt g.number)
 
 
 pictureUrl : Player -> String
 pictureUrl player =
     map player
         (\e -> e.pictureUrl)
-        (\g -> Config.assetPath ++ "guest/" ++ toString g.number ++ ".png")
+        (\g -> Config.assetPath ++ "guest/" ++ String.fromInt g.number ++ ".png")
 
 
 selectedPlayers : Model -> List Player

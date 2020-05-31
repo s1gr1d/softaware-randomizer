@@ -67,9 +67,9 @@ renderPlayerSelectable selectable =
     in
     renderPlayer
         player
-        [ property "width" ("calc(" ++ toString (100 // playerColumns) ++ "% - " ++ toString (2 * playerPadding) ++ "px)")
+        [ property "width" ("calc(" ++ String.fromInt (100 // playerColumns) ++ "% - " ++ String.fromInt (2 * playerPadding) ++ "px)")
         , margin (px playerPadding)
         , position relative
         , selectable |> toOpacity
         ]
-        [ Html.Events.onClick (SelectionChanged player) ]
+        [ onClick (SelectionChanged player) ]
