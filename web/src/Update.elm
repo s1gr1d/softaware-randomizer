@@ -119,7 +119,10 @@ init =
 
 loadEmployees : Cmd Msg
 loadEmployees =
-    Http.send EmployeeInfosLoaded (Http.get Config.scrapingLink decodeJson)
+    Http.get
+        { url = Config.scrapingLink
+        , expect = Http.expectJson EmployeeInfosLoaded (decodeJson)
+        }
 
 
 decodeJson : Json.Decoder (List EmployeeInfo)
