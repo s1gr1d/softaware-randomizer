@@ -1,5 +1,6 @@
 module View exposing (..)
 
+import Bootstrap.Spinner as Spinner exposing (spinner)
 import Css exposing (..)
 import Dict
 import Html exposing (Html, button, div, img, text)
@@ -49,8 +50,17 @@ view model =
         , renderLineUp model.lineUp
         , div [ styles [ displayFlex, flexDirection column ] ]
             [ header
-            , Loading.spinner
-                [ Loading.active model.loading ]
+                    , Html.Styled.fromUnstyled
+                        (let
+                            customStyles =
+                                if model.loading then
+                                    []
+
+                                else
+                                    [ style "display" "none" ]
+                         in
+                         spinner [ Spinner.attrs customStyles ] []
+                        )
             , div
                 [ styles
                     [ listStyleType none
