@@ -29,8 +29,8 @@ update msg model =
 
         EmployeeInfosLoaded result ->
             case result of
-                Ok result ->
-                    ( refreshPlayers model result, Cmd.none )
+                Ok res ->
+                    ( refreshPlayers model res, Cmd.none )
 
                 Err error ->
                     ( { model | error = Just (HttpError error) }, Cmd.none )
