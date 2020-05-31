@@ -1,12 +1,11 @@
 module View.LineUp exposing (..)
 
 import Css exposing (..)
-import Html exposing (Html, div)
-import Html.Attributes
-import Html.Events
-import Message exposing (Msg(ClearLineUp))
+import Html.Styled exposing (Html, div, img, text)
+import Html.Styled.Attributes exposing (css, src)
+import Html.Styled.Events exposing (onClick)
+import Message exposing (Msg(..))
 import Model.Types exposing (..)
-import View.Common exposing (styles)
 import View.Player exposing (renderPlayerRounded)
 
 
@@ -14,13 +13,13 @@ renderLineUp : Maybe LineUp -> Html Msg
 renderLineUp optionalLineUp =
     case optionalLineUp of
         Nothing ->
-            Html.text ""
+            text ""
 
         Just lineUp ->
             div
-                [ Html.Events.onClick ClearLineUp
-                , styles
-                    [ Css.position Css.absolute
+                [ onClick ClearLineUp
+                , css
+                    [ position Css.absolute
                     , Css.width (Css.vw 100)
                     , Css.height (Css.vh 100)
                     , Css.backgroundColor (Css.rgba 0 0 0 0.4)
@@ -29,7 +28,7 @@ renderLineUp optionalLineUp =
                     ]
                 ]
                 [ div
-                    [ styles
+                    [ css
                         [ Css.backgroundColor (Css.hex "ffffff")
                         , Css.width (Css.vw 90)
                         , Css.left (Css.vw 5)
@@ -38,9 +37,9 @@ renderLineUp optionalLineUp =
                         , Css.boxShadow5 Css.zero (Css.px 12) (Css.px 15) Css.zero (Css.rgba 0 0 0 0.24)
                         ]
                     ]
-                    [ Html.img
-                        [ Html.Attributes.src "./assets/lineup.png"
-                        , styles
+                    [ img
+                        [ src "./assets/lineup.png"
+                        , css
                             [ Css.paddingTop (Css.rem 2.5)
                             , Css.height (Css.rem 3)
                             , Css.property "object-fit" "contain"
@@ -49,7 +48,7 @@ renderLineUp optionalLineUp =
                             ]
                         ]
                         []
-                    , div [ styles [ Css.padding (Css.rem 2) ] ]
+                    , div [ css [ Css.padding (Css.rem 2) ] ]
                         [ case lineUp of
                             Single single ->
                                 div []
@@ -73,9 +72,9 @@ renderLineUp optionalLineUp =
 
 soccerTable : Html Msg
 soccerTable =
-    Html.img
-        [ Html.Attributes.src "./assets/soccer-table.png"
-        , styles
+    img
+        [ src "./assets/soccer-table.png"
+        , css
             [ Css.width (Css.pct 100)
             , Css.margin2 (Css.rem 0.5) Css.zero
             , Css.property "object-fit" "contain"

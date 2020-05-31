@@ -108,8 +108,8 @@ togglePlayerSelection players player =
         players
 
 
-init : ( Model, Cmd Msg )
-init =
+init : flags -> ( Model, Cmd Msg )
+init _ =
     let
         model =
             Model.defaultModel

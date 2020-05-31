@@ -1,36 +1,37 @@
 module View.Player exposing (..)
 
 import Css exposing (..)
-import Html exposing (Html, img)
-import Html.Attributes
-import Html.Events
-import Message exposing (Msg(SelectionChanged))
+import Html.Styled exposing (Attribute, Html, img)
+import Html.Styled.Attributes exposing (alt, css, src)
+import Html.Styled.Events exposing (onClick)
+import Message exposing (Msg(..))
 import Model.Getters as Get
 import Model.Types exposing (..)
-import View.Common exposing (styles)
+
 
 
 -- HELPERS --
 
 
-renderPlayer : Player -> List Mixin -> List (Html.Attribute Msg) -> Html Msg
+renderPlayer : Player -> List Style -> List (Attribute Msg) -> Html Msg
 renderPlayer player style attributes =
     img
-        ([ styles (style ++ [ property "object-fit" "contain" ])
-         , Html.Attributes.src (player |> Get.pictureUrl)
-         , Html.Attributes.alt (player |> Get.displayName)
+        ([ css (style ++ [ property "object-fit" "contain" ])
+         , src (player |> Get.pictureUrl)
+         , alt (player |> Get.displayName)
          ]
             ++ attributes
         )
         []
 
 
-toOpacity : Selectable Player -> Mixin
+toOpacity : Selectable Player -> Style
 toOpacity selectable =
     opacity
         (num
             (if selectable.selected then
                 1
+
              else
                 0.47
             )
@@ -41,7 +42,7 @@ toOpacity selectable =
 -------------
 
 
-renderPlayerRounded : Player -> List Mixin -> Html Msg
+renderPlayerRounded : Player -> List Style -> Html Msg
 renderPlayerRounded player style =
     renderPlayer player
         ([ width (pct 22)
